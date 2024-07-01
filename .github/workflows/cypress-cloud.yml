@@ -6,26 +6,67 @@ on:
       spec:
         description: Run by cypress command line
         default: cypress/e2e/*
-
-jobs: 
+        
+jobs:
   cypress-e2e-electron:
     runs-on: ubuntu-latest
+    container:
+      image: cypress/browsers:node18.12.0-chrome103-ff107
+      options: --user 1001
     steps:
       - name: Get code
-        uses: actions/checkout@v4.1.1
-
+        uses: actions/checkout@v3.3.0
+        
       - name: Cypress run
-        uses: cypress-io/github-action@v6.5.0
+        uses: cypress-io/github-action@v5.0.8
         with:
           install-command: yarn install
-          browsers: electron
+          browser: electron
           record: true
           group: UI Electron
           spec: ${{ github.event.inputs.spec }}
-        env: 
-          CYPRESS_RECORD_KEY: e54b6a60-9a8e-45d6-beb2-45c7a49c66d1
+        env:
+          CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          
+  cypress-e2e-chrome:
+    needs: cypress-e2e-electron
+    runs-on: ubuntu-latest
+    container:
+      image: cypress/browsers:node18.12.0-chrome103-ff107
+      options: --user 1001
+    steps:
+      - name: Get code
+        uses: actions/checkout@v3.3.0
 
+      - name: Cypress run
+        uses: cypress-io/github-action@v5.0.8
+        with:
+          install-command: yarn install
+          browser: chrome
+          record: true
+          group: UI Chrome
+          spec: ${{ github.event.inputs.spec }}
+        env:
+          CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  cypress-e2e-firefox:
+    needs: cypress-e2e-electron
+    runs-on: ubuntu-latest
+    container:
+      image: cypress/browsers:node18.12.0-chrome103-ff107
+      options: --user 1001
+    steps:
+      - name: Get code
+        uses: actions/checkout@v3.3.0
         
-
+      - name: Cypress run
+        uses: cypress-io/github-action@v5.0.8
+        with:
+          install-command: yarn install
+          browser: firefox
+          record: true
+          group: UI Firefox
+          spec: ${{ github.event.inputs.spec }}
+        env:
+          CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
